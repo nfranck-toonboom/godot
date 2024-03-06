@@ -21,6 +21,10 @@ namespace GodotTools.Export
         public override string _GetName() => "C#";
 
         private List<string> _tempFolders = new List<string>();
+        private bool _alreadyExported;
+        private PublishConfig _publishConfig;
+        private List<PublishConfig> _targets;
+        private string _platform;
 
         private static bool ProjectContainsDotNet()
         {
@@ -84,6 +88,8 @@ namespace GodotTools.Export
 
             if (type != Internal.CSharpLanguageType)
                 return;
+
+            ExportDotNetProject();
 
             if (Path.GetExtension(path) != Internal.CSharpLanguageExtension)
                 throw new ArgumentException(
@@ -199,6 +205,20 @@ namespace GodotTools.Export
                     UseTempDir = false,
                 });
             }
+            this._publishConfig = publishConfig;
+            this._targets = targets;
+            this._platform = platform;
+        }
+
+        private void ExportDotNetProject()
+        {
+            if (_alreadyExported)
+                return;
+            _alreadyExported = true;
+            
+            string platform = this._platform;
+            PublishConfig publishConfig = this._publishConfig;
+            List<PublishConfig> targets = this._targets;
 
             List<string> outputPaths = new();
 
